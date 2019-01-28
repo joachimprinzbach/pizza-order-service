@@ -1,10 +1,7 @@
 <h1>Pizza Order Overview</h1>
 
 <div *ngIf="pizzaOrders">
-
   <div class="pizza-order" *ngFor="let pizzaOrder of pizzaOrders">
-    <div>
-
       <div><b>Order-Id:</b> {{pizzaOrder.orderId}}</div>
       <div><b>Status:</b> {{pizzaOrder.orderStatus}}</div>
       <ul>
@@ -18,8 +15,5 @@
         <button class="cancel-btn" *ngIf="isOrderCancellable(pizzaOrder)" (click)="cancelPizzaOrder(pizzaOrder)">Cancel Order</button>
         <span *ngIf="noMoreChangesAllowed(pizzaOrder)"><b>No more changes allowed!</b></span>
       </div>
-
-    </div>
-
   </div>
 </div>
