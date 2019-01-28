@@ -24,17 +24,4 @@ export class PizzaOrderOverviewComponent implements OnInit {
       this.pizzaOrderService.getAllPizzaOrders().subscribe(pizzaOrders => this.pizzaOrders = pizzaOrders);
     });
   }
-
-  isOrderEditable(pizzaOrder: PizzaOrderDto) {
-    return pizzaOrder.orderStatus === PizzaOrderStatus.IN_PREPARATION ||
-      pizzaOrder.orderStatus === PizzaOrderStatus.OPEN;
-  }
-
-  isOrderCancellable(pizzaOrder: PizzaOrderDto) {
-    return pizzaOrder.orderStatus === PizzaOrderStatus.OPEN;
-  }
-
-  noMoreChangesAllowed(pizzaOrder: PizzaOrderDto) {
-    return !this.isOrderCancellable(pizzaOrder) && !this.isOrderEditable(pizzaOrder);
-  }
 }

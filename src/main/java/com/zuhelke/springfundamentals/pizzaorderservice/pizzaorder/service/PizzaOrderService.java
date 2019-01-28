@@ -1,12 +1,9 @@
 package com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.service;
 
-import static com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus.IN_PREPARATION;
-import static com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus.OPEN;
 import static java.util.stream.Collectors.toList;
 
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.controller.CreatePizzaOrderDto;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.dataaccess.InventoryService;
-import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.PizzaOrderItem;
 import com.zuhelke.springfundamentals.pizzaorderservice.common.exceptionhandling.ApplicationException;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.controller.PizzaOrderDto;
@@ -53,8 +50,8 @@ public class PizzaOrderService {
             .findById(UUID.fromString(pizzaOrderDto.getOrderId()))
             .orElseThrow(IllegalArgumentException::new);
 
-        if (pizzaOrder.getOrderStatus() == OPEN || pizzaOrder.getOrderStatus() == IN_PREPARATION) {
-            throw new IllegalStateException("Order can't be cancelled anymore!");
+        if (!pizzaOrder.isEditable()) {
+            throw new IllegalStateException("Order can't be edited anymore!");
         }
 
         pizzaOrder.setOrderItems(pizzaOrderDto.getOrderItems().stream().map(this::mapPizzaOrderItemFromDto).collect(toList()));
@@ -67,7 +64,7 @@ public class PizzaOrderService {
             .findById(UUID.fromString(id))
             .orElseThrow(IllegalArgumentException::new);
 
-        if (pizzaOrder.getOrderStatus() != OPEN) {
+        if (!pizzaOrder.isCancellable()) {
             throw new IllegalStateException("Order can't be cancelled anymore!");
         }
 
@@ -78,7 +75,12 @@ public class PizzaOrderService {
         List<PizzaOrderItemDto> orderItems = pizzaOrder.getOrderItems().stream()
             .map(orderItem -> new PizzaOrderItemDto(orderItem.getName(), orderItem.getQuantity()))
             .collect(toList());
-        return new PizzaOrderDto(pizzaOrder.getId().toString(), pizzaOrder.getOrderStatus(), orderItems);
+        return new PizzaOrderDto(pizzaOrder.getId().toString(),
+            pizzaOrder.getOrderStatus(),
+            pizzaOrder.isEditable(),
+            pizzaOrder.isCancellable(),
+            pizzaOrder.noMoreChangesAllowed(),
+            orderItems);
     }
 
     private PizzaOrder mapPizzaOrderFromDto(CreatePizzaOrderDto createPizzaOrderDto) {

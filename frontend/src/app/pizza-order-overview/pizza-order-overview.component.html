@@ -11,9 +11,9 @@
       </ul>
 
       <div>
-        <button *ngIf="isOrderEditable(pizzaOrder)">Edit Order</button>
-        <button class="cancel-btn" *ngIf="isOrderCancellable(pizzaOrder)" (click)="cancelPizzaOrder(pizzaOrder)">Cancel Order</button>
-        <span *ngIf="noMoreChangesAllowed(pizzaOrder)"><b>No more changes allowed!</b></span>
+        <button *ngIf="pizzaOrder.editable">Edit Order</button>
+        <button class="cancel-btn" *ngIf="pizzaOrder.cancellable" (click)="cancelPizzaOrder(pizzaOrder)">Cancel Order</button>
+        <span *ngIf="pizzaOrder.noMoreChangesAllowed"><b>No more changes allowed!</b></span>
       </div>
   </div>
 </div>

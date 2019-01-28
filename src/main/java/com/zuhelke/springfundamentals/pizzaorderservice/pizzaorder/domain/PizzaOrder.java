@@ -1,5 +1,8 @@
 package com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain;
 
+import static com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus.IN_PREPARATION;
+import static com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus.OPEN;
+
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.CascadeType;
@@ -47,5 +50,17 @@ public class PizzaOrder {
 
   public void setOrderItems(List<PizzaOrderItem> orderItems) {
     this.orderItems = orderItems;
+  }
+
+  public boolean isEditable() {
+    return orderStatus == OPEN || orderStatus == IN_PREPARATION;
+  }
+
+  public boolean isCancellable() {
+    return orderStatus == OPEN;
+  }
+
+  public boolean noMoreChangesAllowed() {
+    return !isCancellable() && !isEditable();
   }
 }
