@@ -3,7 +3,7 @@ package com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.service;
 import static java.util.stream.Collectors.toList;
 
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.controller.CreatePizzaOrderDto;
-import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.dataaccess.PizzaInventoryService;
+import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.dataaccess.InventoryService;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.PizzaOrderItem;
 import com.zuhelke.springfundamentals.pizzaorderservice.common.exceptionhandling.ApplicationException;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.controller.PizzaOrderDto;
@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class PizzaOrderService {
 
-    private final PizzaInventoryService pizzaInventoryService;
+    private final InventoryService pizzaInventoryService;
     private final PizzaOrderRepository pizzaOrderRepository;
 
-    public PizzaOrderService(PizzaInventoryService pizzaInventoryService,
+    public PizzaOrderService(InventoryService pizzaInventoryService,
         PizzaOrderRepository pizzaOrderRepository) {
         this.pizzaInventoryService = pizzaInventoryService;
         this.pizzaOrderRepository = pizzaOrderRepository;
@@ -45,8 +45,9 @@ public class PizzaOrderService {
     }
 
     private PizzaOrderDto mapToPizzaOrderDto(PizzaOrder pizzaOrder) {
-        return new PizzaOrderDto(pizzaOrder.getId().toString(),
-            pizzaOrder.getOrderItems().stream().map(orderItem -> new PizzaOrderItemDto(orderItem.getName(), orderItem.getQuantity())).collect(toList()));
+        List<PizzaOrderItemDto> orderItems = pizzaOrder.getOrderItems().stream()
+            .map(orderItem -> new PizzaOrderItemDto(orderItem.getName(), orderItem.getQuantity())).collect(toList());
+        return new PizzaOrderDto(pizzaOrder.getId().toString(), pizzaOrder.getOrderStatus(), orderItems);
     }
 
     private PizzaOrder mapPizzaOrderFromDto(CreatePizzaOrderDto createPizzaOrderDto) {

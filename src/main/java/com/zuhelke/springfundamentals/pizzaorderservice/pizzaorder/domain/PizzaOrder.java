@@ -15,6 +15,8 @@ public class PizzaOrder {
   @GeneratedValue
   private UUID id;
 
+  private OrderStatus orderStatus;
+
   @OneToMany(cascade = CascadeType.ALL)
   private List<PizzaOrderItem> orderItems;
 
@@ -22,11 +24,21 @@ public class PizzaOrder {
   }
 
   public PizzaOrder(List<PizzaOrderItem> orderItems) {
+    this.orderStatus = OrderStatus.OPEN;
+    this.orderItems = orderItems;
+  }
+
+  public PizzaOrder(OrderStatus orderStatus, List<PizzaOrderItem> orderItems) {
+    this.orderStatus = orderStatus;
     this.orderItems = orderItems;
   }
 
   public UUID getId() {
     return id;
+  }
+
+  public OrderStatus getOrderStatus() {
+    return orderStatus;
   }
 
   public List<PizzaOrderItem> getOrderItems() {
