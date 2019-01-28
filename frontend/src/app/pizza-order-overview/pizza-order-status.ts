@@ -1,0 +1,6 @@
+export enum PizzaOrderStatus {
+  OPEN = "OPEN",
+  IN_PREPARATION = "IN_PREPARATION",
+  IN_DELIVERY = "IN_DELIVERY",
+  COMPLETED = "COMPLETED"
+}

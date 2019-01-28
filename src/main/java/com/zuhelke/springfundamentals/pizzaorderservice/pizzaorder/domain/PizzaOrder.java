@@ -44,4 +44,8 @@ public class PizzaOrder {
   public List<PizzaOrderItem> getOrderItems() {
     return orderItems;
   }
+
+  public void setOrderItems(List<PizzaOrderItem> orderItems) {
+    this.orderItems = orderItems;
+  }
 }

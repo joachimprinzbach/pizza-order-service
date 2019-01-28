@@ -1,9 +1,12 @@
 package com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.service;
 
+import static com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus.IN_PREPARATION;
+import static com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus.OPEN;
 import static java.util.stream.Collectors.toList;
 
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.controller.CreatePizzaOrderDto;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.dataaccess.InventoryService;
+import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.OrderStatus;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.PizzaOrderItem;
 import com.zuhelke.springfundamentals.pizzaorderservice.common.exceptionhandling.ApplicationException;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.controller.PizzaOrderDto;
@@ -11,6 +14,7 @@ import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.controller.Pi
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.dataaccess.PizzaOrderRepository;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzaorder.domain.PizzaOrder;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,13 +48,46 @@ public class PizzaOrderService {
             .collect(toList());
     }
 
+    public PizzaOrderDto update(PizzaOrderDto pizzaOrderDto) {
+        PizzaOrder pizzaOrder = pizzaOrderRepository
+            .findById(UUID.fromString(pizzaOrderDto.getOrderId()))
+            .orElseThrow(IllegalArgumentException::new);
+
+        if (pizzaOrder.getOrderStatus() == OPEN || pizzaOrder.getOrderStatus() == IN_PREPARATION) {
+            throw new IllegalStateException("Order can't be cancelled anymore!");
+        }
+
+        pizzaOrder.setOrderItems(pizzaOrderDto.getOrderItems().stream().map(this::mapPizzaOrderItemFromDto).collect(toList()));
+
+        return mapToPizzaOrderDto(pizzaOrderRepository.save(pizzaOrder));
+    }
+
+    public void cancel(String id) {
+        PizzaOrder pizzaOrder = pizzaOrderRepository
+            .findById(UUID.fromString(id))
+            .orElseThrow(IllegalArgumentException::new);
+
+        if (pizzaOrder.getOrderStatus() != OPEN) {
+            throw new IllegalStateException("Order can't be cancelled anymore!");
+        }
+
+        pizzaOrderRepository.delete(pizzaOrder);
+    }
+
     private PizzaOrderDto mapToPizzaOrderDto(PizzaOrder pizzaOrder) {
         List<PizzaOrderItemDto> orderItems = pizzaOrder.getOrderItems().stream()
-            .map(orderItem -> new PizzaOrderItemDto(orderItem.getName(), orderItem.getQuantity())).collect(toList());
+            .map(orderItem -> new PizzaOrderItemDto(orderItem.getName(), orderItem.getQuantity()))
+            .collect(toList());
         return new PizzaOrderDto(pizzaOrder.getId().toString(), pizzaOrder.getOrderStatus(), orderItems);
     }
 
     private PizzaOrder mapPizzaOrderFromDto(CreatePizzaOrderDto createPizzaOrderDto) {
-        return new PizzaOrder(createPizzaOrderDto.getOrderItems().stream().map(orderItem -> new PizzaOrderItem(orderItem.getName(), orderItem.getQuantity())).collect(toList()));
+        return new PizzaOrder(createPizzaOrderDto.getOrderItems().stream()
+            .map(this::mapPizzaOrderItemFromDto)
+            .collect(toList()));
+    }
+
+    private PizzaOrderItem mapPizzaOrderItemFromDto(PizzaOrderItemDto orderItem) {
+        return new PizzaOrderItem(orderItem.getName(), orderItem.getQuantity());
     }
 }
