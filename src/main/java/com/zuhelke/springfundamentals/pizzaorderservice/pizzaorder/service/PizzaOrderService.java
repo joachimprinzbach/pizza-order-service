@@ -54,7 +54,7 @@ public class PizzaOrderService {
             .orElseThrow(IllegalArgumentException::new);
 
         if (pizzaOrder.getOrderStatus() == OPEN || pizzaOrder.getOrderStatus() == IN_PREPARATION) {
-            throw new IllegalStateException("Order can't be cancelled anymore!");
+            throw new IllegalStateException("Order can't be edited anymore!");
         }
 
         pizzaOrder.setOrderItems(pizzaOrderDto.getOrderItems().stream().map(this::mapPizzaOrderItemFromDto).collect(toList()));
