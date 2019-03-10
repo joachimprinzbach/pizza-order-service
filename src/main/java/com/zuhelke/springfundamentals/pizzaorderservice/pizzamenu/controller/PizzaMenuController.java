@@ -1,9 +1,12 @@
 package com.zuhelke.springfundamentals.pizzaorderservice.pizzamenu.controller;
 
 import com.zuhelke.springfundamentals.pizzaorderservice.common.exceptionhandling.ResourceNotFoundException;
+import com.zuhelke.springfundamentals.pizzaorderservice.common.testdata.TestDataGenerator;
 import com.zuhelke.springfundamentals.pizzaorderservice.pizzamenu.service.PizzaMenuService;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PizzaMenuController {
+
+    private static final Logger logger = LoggerFactory.getLogger(TestDataGenerator.class);
 
     private final PizzaMenuService pizzaMenuService;
 
